@@ -5,6 +5,9 @@
 		"type": "git",
 		"url": "https://github.com/aleksilassila/reiverr"
 	},
+	"main": "electron/main.ts",
+	"author": "Aleksi Lassila",
+	"description": "Reiverr is a clean combined interface for Jellyfin, TMDB, Radarr and Sonarr, as well as a replacement to Overseerr.",
 	"scripts": {
 		"dev": "vite dev --host",
 		"build": "vite build",
@@ -15,9 +18,20 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"test:unit": "vitest",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
-		"format": "prettier --plugin-search-dir . --write ."
+		"format": "prettier --plugin-search-dir . --write .",
+		"start": "electron-forge start",
+		"deploy:electron": "vite build && electron ./electron/main.ts",
+		"start:electron": "electron ./electron/main.ts",
+		"package:electron": "electron-forge package",
+		"make:electron": "electron-forge make"
 	},
 	"devDependencies": {
+		"@electron-forge/cli": "^6.4.0",
+		"@electron-forge/maker-deb": "^6.4.0",
+		"@electron-forge/maker-rpm": "^6.4.0",
+		"@electron-forge/maker-squirrel": "^6.4.0",
+		"@electron-forge/maker-zip": "^6.4.0",
+		"@electron-forge/plugin-auto-unpack-natives": "^6.4.0",
 		"@fontsource/fira-mono": "^4.5.10",
 		"@neoconfetti/svelte": "^1.0.0",
 		"@playwright/test": "^1.28.1",
@@ -31,6 +45,7 @@
 		"@typescript-eslint/parser": "^5.45.0",
 		"autoprefixer": "^10.4.14",
 		"classnames": "^2.3.2",
+		"electron": "^26.0.0",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte": "^2.26.0",
@@ -50,6 +65,7 @@
 	"dependencies": {
 		"@jellyfin/sdk": "^0.7.0",
 		"axios": "^1.4.0",
+		"electron-squirrel-startup": "^1.0.0",
 		"hls.js": "^1.4.6",
 		"openapi-fetch": "^0.2.1",
 		"radix-icons-svelte": "^1.2.1",

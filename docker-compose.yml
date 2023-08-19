@@ -3,9 +3,9 @@ version: '3.8'
 name: reiverr-dev
 
 services:
-  reiverr-frontend:
+  reiverr:
     container_name: reiverr-dev
-    image: ghcr.io/aleksilassila/reiverr:latest
+    image: reiverr-dev
     restart: unless-stopped
     volumes:
       - ./config:/config
