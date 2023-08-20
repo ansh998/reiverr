@@ -10,10 +10,11 @@ class TypeOrm {
 	}
 
 	public static getDb(): Promise<DataSource | null> {
+		console.log((process.env.CONFIG_PATH || 'config') + '/reiverr.sqlite');
 		if (!TypeOrm.instance) {
 			TypeOrm.instance = new DataSource({
 				type: 'sqlite',
-				database: 'config/reiverr.sqlite',
+				database: (process.env.CONFIG_PATH || 'config') + '/reiverr.sqlite',
 				synchronize: true,
 				entities: [Settings],
 				logging: true

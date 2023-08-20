@@ -1,4 +1,7 @@
+const os = require('os');
+
 process.env.PORT = '9494';
+process.env.CONFIG_PATH = os.homedir() + '/.reiverr';
 
 (async () => {
 	const { app, BrowserWindow } = await import('electron');

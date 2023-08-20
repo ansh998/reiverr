@@ -2,9 +2,9 @@ const fs = require('fs');
 const path = require('path');
 
 module.exports = {
-	packagerConfig: {
-		asar: true
-	},
+	// packagerConfig: {
+	// 	asar: true
+	// },
 	rebuildConfig: {},
 	makers: [
 		{
@@ -24,12 +24,12 @@ module.exports = {
 			config: {}
 		}
 	],
-	plugins: [
-		{
-			name: '@electron-forge/plugin-auto-unpack-natives',
-			config: {}
-		}
-	],
+	// plugins: [
+	// 	{
+	// 		name: '@electron-forge/plugin-auto-unpack-natives',
+	// 		config: {}
+	// 	}
+	// ],
 	hooks: {
 		packageAfterPrune: async (forgeConfig, buildPath, electronVersion, platform, arch) => {
 			if (platform === 'darwin') {
