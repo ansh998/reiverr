@@ -6,6 +6,7 @@
 	import TitleShowcase from '$lib/components/TitleShowcase/TitleShowcase.svelte';
 	import { library } from '$lib/stores/library.store';
 	import type { ComponentProps } from 'svelte';
+	import { _ } from 'svelte-i18n';
 
 	let continueWatchingVisible = true;
 

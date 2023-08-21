@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import I18n from '$lib/components/Lang/I18n.svelte';
 	import DynamicModal from '$lib/components/Modal/DynamicModal.svelte';
 	import Navbar from '$lib/components/Navbar/Navbar.svelte';
 	import UpdateChecker from '$lib/components/UpdateChecker.svelte';
@@ -13,6 +14,7 @@
 </script>
 
 <!-- {#if data.isApplicationSetUp} -->
+<I18n />
 <div class="app">
 	<Navbar />
 	<main>

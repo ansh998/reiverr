@@ -11,6 +11,7 @@
 	import { CaretDown, Gear } from 'radix-icons-svelte';
 	import type { ComponentProps } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import { _ } from 'svelte-i18n';
 
 	let itemsVisible: 'all' | 'movies' | 'shows' = 'all';
 	let sortBy: 'added' | 'rating' | 'release' | 'size' | 'name' = 'name';
@@ -193,7 +194,9 @@
 		}}
 		out:fade|global={{ duration: $settings.animationDuration }}
 	>
-		<h1>Configure Radarr, Sonarr and Jellyfin to view and manage your library.</h1>
+		<h1>
+			{$_('library.missingConfiguration')}
+		</h1>
 	</div>
 {:else}
 	<div
@@ -281,7 +284,7 @@
 							})}
 							on:click={() => (openTab = 'available')}
 						>
-							Available
+							{$_('library.available')}
 						</button>
 						<button
 							class={classNames('hover:text-zinc-300 selectable rounded px-1 -mx-1', {
@@ -289,7 +292,7 @@
 							})}
 							on:click={() => (openTab = 'watched')}
 						>
-							Watched
+							{$_('library.watched')}
 						</button>
 						<button
 							class={classNames('hover:text-zinc-300 selectable rounded px-1 -mx-1', {
@@ -297,14 +300,16 @@
 							})}
 							on:click={() => (openTab = 'unavailable')}
 						>
-							Unavailable
+							{$_('library.unavailable')}
 						</button>
 					</div>
 				</UiCarousel>
 				<div class="flex items-center gap-3 justify-end flex-shrink-0 flex-initial relative">
 					<IconButton>
 						<div class="flex gap-0.5 items-center text-sm">
-							<span>By Title</span>
+							<span>
+								{$_('library.sort.byTitle')}
+							</span>
 							<CaretDown size={20} />
 						</div>
 					</IconButton>

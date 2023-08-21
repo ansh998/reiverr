@@ -13,6 +13,7 @@
 	import { formatDateToYearMonthDay } from '$lib/utils';
 	import { get } from 'svelte/store';
 	import { fade } from 'svelte/transition';
+	import { _ } from 'svelte-i18n';
 
 	function parseIncludedLanguages(includedLanguages: string) {
 		return includedLanguages.replace(' ', '').split(',').join('|');
@@ -131,7 +132,11 @@
 	out:fade|global={{ duration: $settings.animationDuration }}
 >
 	<div class="max-w-screen-2xl mx-auto">
-		<Carousel gradientFromColor="from-stone-950" heading="Trending" class="mx-2 sm:mx-8 2xl:mx-0">
+		<Carousel
+			gradientFromColor="from-stone-950"
+			heading={$_('discover.trending')}
+			class="mx-2 sm:mx-8 2xl:mx-0"
+		>
 			{#await fetchTrendingProps()}
 				<CarouselPlaceholderItems size="lg" />
 			{:then props}
@@ -151,7 +156,7 @@
 	}}
 	out:fade|global={{ duration: $settings.animationDuration }}
 >
-	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading="Popular People">
+	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading={$_('discover.popularPeople')}>
 		{#await fetchTrendingActorProps()}
 			<CarouselPlaceholderItems />
 		{:then props}
@@ -160,7 +165,7 @@
 			{/each}
 		{/await}
 	</Carousel>
-	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading="Upcoming Movies">
+	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading={$_('discover.upcomingMovies')}>
 		{#await fetchUpcomingMovies()}
 			<CarouselPlaceholderItems />
 		{:then props}
@@ -169,7 +174,7 @@
 			{/each}
 		{/await}
 	</Carousel>
-	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading="Upcoming Series">
+	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading={$_('discover.upcomingSeries')}>
 		{#await fetchUpcomingSeries()}
 			<CarouselPlaceholderItems />
 		{:then props}
@@ -178,12 +183,12 @@
 			{/each}
 		{/await}
 	</Carousel>
-	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading="Genres">
+	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading={$_('discover.genres')}>
 		{#each Object.values(genres) as genre (genre.tmdbGenreId)}
 			<GenreCard {genre} />
 		{/each}
 	</Carousel>
-	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading="New Digital Releases">
+	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading={$_('discover.newDigitalReleases')}>
 		{#await fetchDigitalReleases()}
 			<CarouselPlaceholderItems />
 		{:then props}
@@ -192,7 +197,7 @@
 			{/each}
 		{/await}
 	</Carousel>
-	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading="Streaming Now">
+	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading={$_('discover.streamingNow')}>
 		{#await fetchNowStreaming()}
 			<CarouselPlaceholderItems />
 		{:then props}
@@ -201,7 +206,7 @@
 			{/each}
 		{/await}
 	</Carousel>
-	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading="TV Networks">
+	<Carousel class="mx-2 sm:mx-8 2xl:mx-0" heading={$_('discover.TVNetworks')}>
 		{#each Object.values(networks) as network (network.tmdbNetworkId)}
 			<NetworkCard {network} />
 		{/each}
