@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { Settings } from './entities/Settings';
+import { dev } from '$app/environment';
 
 class TypeOrm {
 	private static instance: Promise<DataSource | null> | null = null;
@@ -10,12 +11,11 @@ class TypeOrm {
 	}
 
 	public static getDb(): Promise<DataSource | null> {
-		console.log((process.env.CONFIG_PATH || 'config') + '/reiverr.sqlite');
 		if (!TypeOrm.instance) {
 			TypeOrm.instance = new DataSource({
 				type: 'sqlite',
 				database: (process.env.CONFIG_PATH || 'config') + '/reiverr.sqlite',
-				synchronize: true,
+				synchronize: dev,
 				entities: [Settings],
 				logging: true
 			})
