@@ -78,7 +78,7 @@ services:
 
 ### Reiverr will be accessible via port 9494 by default.
 
-If you have any questions or run into issues or bugs, you can start a [discussion](https://github.com/aleksilassila/reiverr/discussions) or open an [issue](https://github.com/aleksilassila/reiverr/issues).
+If you have any questions or run into issues or bugs, you can start a [discussion](https://github.com/aleksilassila/reiverr/discussions), join in [Discord](https://discord.gg/enypPQh6pz) or open an [issue](https://github.com/aleksilassila/reiverr/issues).
 
 ## Other Platforms
 

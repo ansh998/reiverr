@@ -276,6 +276,7 @@
 				{$_('settings.misc.changelog')}
 			</a>
 			<a target="_blank" href="https://github.com/aleksilassila/reiverr">GitHub</a>
+			<a target="_blank" href="https://discord.gg/enypPQh6pz">Discord</a>
 		</div>
 	</div>
 </div>
