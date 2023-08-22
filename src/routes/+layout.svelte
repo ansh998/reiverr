@@ -11,7 +11,8 @@
 	import Notifications from '$lib/components/Notification/Notifications.svelte';
 
 	export let data: LayoutServerData;
-	settings.set(data.settings);
+	console.log('data', data);
+	// settings.set(data.settings);
 </script>
 
 <!-- {#if data.isApplicationSetUp} -->
