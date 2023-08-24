@@ -26,7 +26,7 @@
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
 		"dev:electron": "electron .",
-		"dist:electron": "electron-builder -mwl --x64 --arm64 --config build.config.json"
+		"dist:electron": "npm i electron-builder@22.14.13 && electron-builder -mwl --x64 --config build.config.json && electron-builder -m --arm64 --config build.config.json"
 	},
 	"devDependencies": {
 		"@fontsource/fira-mono": "^4.5.10",
@@ -43,7 +43,7 @@
 		"autoprefixer": "^10.4.14",
 		"classnames": "^2.3.2",
 		"electron": "^26.0.0",
-		"electron-builder": "^24.6.3",
+		"electron-builder": "^22.14.13",
 		"eslint": "^8.28.0",
 		"eslint-config-prettier": "^8.5.0",
 		"eslint-plugin-svelte": "^2.26.0",
