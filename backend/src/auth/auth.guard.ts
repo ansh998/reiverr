@@ -6,26 +6,41 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { JWT_SECRET } from '../consts';
+import { ENV, JWT_SECRET } from '../consts';
 import { AccessTokenPayload } from './auth.service';
 import { User } from '../users/user.entity';
 import { UsersService } from '../users/users.service';
+import { Request } from 'express';
 
-export const GetUser = createParamDecorator(
+export const GetAuthUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): User => {
     const request = ctx.switchToHttp().getRequest();
     return request.user;
   },
 );
 
-function extractTokenFromHeader(request: Request): string | undefined {
+export const GetAuthToken = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext): string | undefined => {
+    const request = ctx.switchToHttp().getRequest();
+    return extractTokenFromRequest(request);
+  },
+);
+
+function extractTokenFromRequest(request: Request): string | undefined {
   const [type, token] =
     (request.headers as any).authorization?.split(' ') ?? [];
-  return type === 'Bearer' ? token : undefined;
+
+  const v = type === 'Bearer' ? token : undefined;
+
+  if (v) return v;
+
+  return request.query['reiverr_token']
+    ? (request.query['reiverr_token'] as string)
+    : undefined;
 }
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class UserAccessControl implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private userService: UsersService,
@@ -33,8 +48,12 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const token = extractTokenFromHeader(request);
-    if (!token) {
+    const token = extractTokenFromRequest(request);
+
+    if (ENV === 'development' && !token) {
+      request['user'] = await this.userService.findOneByName('test');
+      return true;
+    } else if (!token) {
       throw new UnauthorizedException();
     }
     try {
@@ -44,22 +63,31 @@ export class AuthGuard implements CanActivate {
           secret: JWT_SECRET,
         },
       );
+
+      let user: User;
       if (payload.sub) {
-        request['user'] = await this.userService.findOne(payload.sub);
+        user = await this.userService.findOne(payload.sub);
+        request['user'] = user;
       }
 
-      if (!request['user']) {
+      if (!user) {
+        throw new UnauthorizedException();
+      }
+
+      const targetUser = request.params.userId;
+      if (targetUser && targetUser !== user.id && user.isAdmin === false) {
         throw new UnauthorizedException();
       }
     } catch {
       throw new UnauthorizedException();
     }
+
     return true;
   }
 }
 
 @Injectable()
-export class OptionalAuthGuard implements CanActivate {
+export class OptionalAccessControl implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private userService: UsersService,
@@ -67,7 +95,7 @@ export class OptionalAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const token = extractTokenFromHeader(request);
+    const token = extractTokenFromRequest(request);
     if (!token) {
       return true;
     }

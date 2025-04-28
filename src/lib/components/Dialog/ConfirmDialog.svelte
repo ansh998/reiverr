@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Container from '../../../Container.svelte';
+	import Container from '../Container.svelte';
 	import Button from '../Button.svelte';
 	import { modalStack } from '../Modal/modal.store';
 	import Dialog from './Dialog.svelte';
@@ -30,7 +30,7 @@
 </script>
 
 <Dialog>
-	<div class="header2 mb-4">
+	<div class="h3 mb-4">
 		{header}
 	</div>
 	<div class="font-medium text-secondary-300 mb-8">

@@ -1,0 +1,16 @@
+{
+  "name": "@aleksilassila/reiverr-plugin",
+  "version": "3.0.0",
+  "main": "dist/src/index",
+  "types": "./dist/src/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {},
+  "description": "",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  }
+}

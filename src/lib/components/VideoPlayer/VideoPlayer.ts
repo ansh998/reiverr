@@ -1,7 +1,6 @@
-import { writable } from 'svelte/store';
+import type { MediaSource, SubtitlesDto as Subtitles } from '$lib/apis/reiverr/reiverr.openapi';
 import { modalStack } from '../Modal/modal.store';
-import { jellyfinItemsStore } from '../../stores/data.store';
-import VideoPlayerModal from './JellyfinVideoPlayerModal.svelte';
+import TmdbVideoPlayerModal from './TmdbVideoPlayerModal.svelte';
 
 export type SubtitleInfo = {
 	subtitles?: Subtitles;
@@ -9,49 +8,47 @@ export type SubtitleInfo = {
 	selectSubtitles: (subtitles?: Subtitles) => void;
 };
 
-export type Subtitles = {
-	url: string;
-	srclang: string;
-	kind: 'subtitles' | 'captions' | 'descriptions';
-	language: string;
-};
-
 export type AudioTrack = {
 	language: string;
 	index: number;
 };
 
-export type PlaybackInfo = {
-	playbackUrl: string;
+export interface VideoPlayerContext {
+	title?: string;
+	subtitle?: string;
+	playbackInfo?: VideoSource;
+}
+
+export type VideoSource = {
+	src: string;
 	directPlay: boolean;
-	backdrop?: string;
-	startTime?: number;
+	backdropUrl?: string;
+	progress?: number;
 
 	audioStreamIndex: number;
 	audioTracks: AudioTrack[];
 	selectAudioTrack: (index: number) => void;
 };
 
-const initialValue = { visible: false, jellyfinId: '' };
-export type PlayerStateValue = typeof initialValue;
+export async function streamTmdbItem(options: {
+	tmdbId: string;
+	season?: number;
+	episode?: number;
+	source: MediaSource;
+	key: string;
+	progress?: number;
+}) {
+	const { tmdbId, season, episode, progress, source, key } = options;
 
-function createPlayerState() {
-	const store = writable<PlayerStateValue>(initialValue);
-
-	return {
-		...store,
-		streamJellyfinId: (id: string) => {
-			store.set({ visible: true, jellyfinId: id });
-			modalStack.create(VideoPlayerModal, { id });
-		},
-		close: () => {
-			store.set({ visible: false, jellyfinId: '' });
-			jellyfinItemsStore.send();
-		}
-	};
+	modalStack.create(TmdbVideoPlayerModal, {
+		tmdbId,
+		episode,
+		season,
+		source,
+		key,
+		progress
+	});
 }
-
-export const playerState = createPlayerState();
 
 export function getBrowserSpecificMediaFunctions() {
 	// These functions are different in every browser

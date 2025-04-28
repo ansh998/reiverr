@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Container from '../../Container.svelte';
+	import Container from './Container.svelte';
 	import type { FormEventHandler, HTMLInputTypeAttribute } from 'svelte/elements';
 	import { type ComponentType, createEventDispatcher } from 'svelte';
 	import { PLATFORM_TV } from '../constants';
@@ -8,6 +8,7 @@
 	import { Check, Cross1 } from 'radix-icons-svelte';
 
 	export let value = '';
+	export let placeholder: string = '';
 	export let type: HTMLInputTypeAttribute = 'text';
 	export let isValid: Promise<boolean> | boolean | undefined = undefined;
 	let icon: ComponentType | undefined = undefined;
@@ -60,10 +61,12 @@
 				selected: hasFocus,
 				unselected: !hasFocus
 			})}
+			on:blur
 			{type}
 			{value}
 			on:input={handleChange}
 			bind:this={input}
+			{placeholder}
 		/>
 		{#if icon}
 			<div class="absolute inset-y-0 right-4 flex items-center justify-center">

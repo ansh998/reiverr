@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Dialog from '../Dialog/Dialog.svelte';
-	import Container from '../../../Container.svelte';
+	import Container from '../Container.svelte';
 	import Button from '../Button.svelte';
 	import { ArrowRight, Check, Plus, Trash } from 'radix-icons-svelte';
 	import { modalStack } from '../Modal/modal.store';
@@ -127,7 +127,7 @@
 			>
 				<div class="z-10 mb-8">
 					<div class="h-24" />
-					<h1 class="header2">Add {title} to Sonarr?</h1>
+					<h1 class="h3">Add {title} to Sonarr?</h1>
 					<div class="font-medium text-secondary-300 mb-8">
 						Before you can fetch episodes, you need to add this series to Sonarr.
 					</div>

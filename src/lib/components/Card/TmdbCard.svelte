@@ -5,7 +5,10 @@
 	import { TMDB_POSTER_SMALL } from '../../constants';
 	import type { TitleType } from '../../types';
 
-	export let item: TmdbMovie2 | TmdbSeries2;
+	export let item:
+		| Pick<TmdbMovie2, 'id' | 'title' | 'release_date' | 'poster_path' | 'vote_average' | 'runtime'>
+		| Pick<TmdbSeries2, 'id' | 'name' | 'first_air_date' | 'poster_path' | 'vote_average'>;
+	export let progress = 0;
 	let title = '';
 	let subtitle = '';
 	let type: TitleType = 'movie';
@@ -24,7 +27,7 @@
 		tmdbId: item.id,
 		title,
 		subtitle,
-		backdropUrl: TMDB_POSTER_SMALL + item.poster_path,
+		backdropUrl: item.poster_path ? TMDB_POSTER_SMALL + item.poster_path : '',
 		type,
 		orientation: 'portrait',
 		rating: item.vote_average,
@@ -32,4 +35,10 @@
 	};
 </script>
 
-<Card {...$$restProps} {...props} on:enter />
+<Card
+	{...$$restProps}
+	{...props}
+	{progress}
+	runtime={'runtime' in item ? item.runtime : 0}
+	on:enter
+/>

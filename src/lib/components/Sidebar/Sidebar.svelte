@@ -10,13 +10,14 @@
 	} from 'radix-icons-svelte';
 	import classNames from 'classnames';
 	import { get, type Readable, writable, type Writable } from 'svelte/store';
-	import Container from '../../../Container.svelte';
+	import Container from '../Container.svelte';
 	import { registrars, Selectable } from '../../selectable';
 	import { stackRouter, navigate } from '../StackRouter/StackRouter';
 	import { onMount } from 'svelte';
 	import { useTabs } from '../Tab/Tab';
 	import { user } from '../../stores/user.store';
 	import { sessions } from '../../stores/session.store';
+	import { getUiVisibilityContext } from '$lib/stores/ui-visibility.store';
 
 	enum Tabs {
 		Users,
@@ -28,6 +29,8 @@
 	}
 
 	const tab = useTabs(Tabs.Series);
+
+	const { visibleStyle } = getUiVisibilityContext();
 
 	let selectedIndex = 0;
 	let activeIndex = -1;
@@ -52,7 +55,7 @@
 		// if (index === activeIndex) {
 		// 	if (get(selectable.hasFocusWithin)) Selectable.giveFocus('right');
 		// }
-		selectable.focusChild(index);
+		selectable.focusChild(index, { setFocusedElement: false });
 		const path =
 			{
 				[Tabs.Users]: '/users',
@@ -101,11 +104,12 @@
 	bind:focusIndex
 	bind:selectable
 	on:mount={registrars.sidebar.registrar}
+	style={$visibleStyle}
 >
 	<!-- Background -->
 	<div
 		class={classNames(
-			'absolute inset-y-0 left-0 w-[25vw] transition-opacity bg-gradient-to-r from-secondary-900 to-transparent',
+			'absolute inset-y-0 left-0 min-w-[40rem] w-[25vw] transition-opacity bg-gradient-to-r from-secondary-900 to-transparent',
 			{
 				'opacity-0': !$isNavBarOpen,
 				'group-hover:opacity-100 pointer-events-none': true
@@ -146,7 +150,7 @@
 			<Person class="w-8 h-8" />
 			<span
 				class={classNames(
-					'text-xl font-medium transition-opacity flex items-center absolute inset-y-0 left-20',
+					'text-xl font-medium transition-opacity flex items-center absolute inset-y-0 left-20 text-nowrap',
 					{
 						'opacity-0 pointer-events-none': $isNavBarOpen === false,
 						'group-hover:opacity-100 group-hover:pointer-events-auto': true

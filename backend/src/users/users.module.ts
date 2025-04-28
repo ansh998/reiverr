@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
+import { forwardRef, Module } from '@nestjs/common';
+import { SourceProvidersModule } from 'src/source-providers/source-providers.module';
 import { userProviders } from './user.providers';
 import { UsersController } from './users.controller';
-import { DatabaseModule } from '../database/database.module';
+import { UsersService } from './users.service';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [forwardRef(() => SourceProvidersModule)],
   providers: [...userProviders, UsersService],
   controllers: [UsersController],
   exports: [UsersService],

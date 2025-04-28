@@ -8,16 +8,24 @@ export class UserDto extends OmitType(User, [
   @ApiProperty({ type: 'string' })
   profilePicture: string | null;
 
-  static fromEntity(entity: User): UserDto {
-    return {
-      id: entity.id,
-      name: entity.name,
-      isAdmin: entity.isAdmin,
-      settings: entity.settings,
-      onboardingDone: entity.onboardingDone,
+  static fromEntity(entity: User, caller: User = entity): UserDto {
+    const out = {
+      ...entity,
+      // id: entity.id,
+      // name: entity.name,
+      // isAdmin: entity.isAdmin,
+      // settings: entity.settings,
+      // onboardingDone: entity.onboardingDone,
+      // mediaSources: entity.mediaSources,
+      password: '',
       profilePicture:
         'data:image;base64,' + entity.profilePicture?.toString('base64'),
+      // pluginSettings: entity.pluginSettings,
     };
+
+    delete (out as any).password;
+
+    return out;
   }
 }
 
@@ -37,6 +45,7 @@ export class UpdateUserDto extends PartialType(
     'name',
     'password',
     'isAdmin',
+    // 'pluginSettings',
   ] as const),
 ) {
   @ApiProperty({ type: 'string', required: false })

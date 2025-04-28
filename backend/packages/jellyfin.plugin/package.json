@@ -1,0 +1,20 @@
+{
+  "name": "jellyfin.plugin",
+  "version": "1.0.0",
+  "main": "src/index",
+  "scripts": {
+    "openapi:generate": "ts-node src/generate-openapi.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/axios": "^0.14.4",
+    "axios": "^1.7.8",
+    "express-http-proxy": "^2.1.1",
+    "@aleksilassila/reiverr-plugin": "*",
+    "swagger-typescript-api": "^13.0.23"
+  },
+  "devDependencies": {},
+  "description": ""
+}

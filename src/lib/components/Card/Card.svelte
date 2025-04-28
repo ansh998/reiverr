@@ -4,7 +4,7 @@
 	import ProgressBar from '../ProgressBar.svelte';
 	import LazyImg from '../LazyImg.svelte';
 	import type { TitleType } from '../../types';
-	import Container from '../../../Container.svelte';
+	import Container from '../Container.svelte';
 	import type { Readable } from 'svelte/store';
 	import AnimatedSelection from '../AnimateScale.svelte';
 	import { navigate } from '../StackRouter/StackRouter';
@@ -14,13 +14,14 @@
 	export let tvdbId: number | undefined = undefined;
 	export let jellyfinId: string = '';
 	export let type: TitleType = 'movie';
-	export let backdropUrl: string;
+	export let backdropUrl: string = '';
 	export let group = false;
 
 	export let title = '';
 	export let subtitle = '';
 	export let rating: number | undefined = undefined;
 	export let progress = 0;
+	export let runtime = 0;
 
 	export let disabled = false;
 	export let shadow = false;
@@ -28,8 +29,10 @@
 	export let orientation: 'portrait' | 'landscape' = 'landscape';
 
 	let hasFocus: Readable<boolean>;
-
 	let dimensions = getCardDimensions(window.innerWidth);
+
+	$: lowerLimit = Math.min(runtime ? 15 / runtime : 0.1, 0.1);
+	$: upperLimit = 1 - Math.max(runtime ? 10 / runtime : 0.1, 0.1);
 </script>
 
 <svelte:window on:resize={(e) => (dimensions = getCardDimensions(e.currentTarget.innerWidth))} />
@@ -49,6 +52,7 @@
 	{/if}
 	<AnimatedSelection hasFocus={$hasFocus}>
 		<Container
+			{...$$restProps}
 			{disabled}
 			on:clickOrSelect={() => {
 				if (tmdbId || tvdbId) navigate(`/${type}/${tmdbId || tvdbId}`);
@@ -75,7 +79,13 @@
 			bind:hasFocus
 		>
 			<!--{#if !group}-->
-			<LazyImg src={backdropUrl} class="absolute inset-0" />
+			{#if backdropUrl}
+				<LazyImg src={backdropUrl} class="absolute inset-0" />
+			{:else}
+				<div class="absolute inset-0 bg-secondary-700 h1 flex items-center justify-center">
+					{title}
+				</div>
+			{/if}
 			<!--{:else}-->
 			<!--	<LazyImg src={backdropUrl} class="absolute inset-0 opacity-10 " />-->
 			<!--	<div class="absolute inset-0 bg-white/10 opacity-10" />-->
@@ -134,7 +144,7 @@
 			<!--		</div>-->
 
 			<!-- Play Button -->
-			{#if jellyfinId}
+			<!-- {#if jellyfinId}
 				<div class="absolute inset-0 flex items-center justify-center z-[1]">
 					<PlayButton
 						on:click={(e) => {
@@ -144,8 +154,8 @@
 						class="sm:opacity-0 group-hover:opacity-100 transition-opacity"
 					/>
 				</div>
-			{/if}
-			{#if progress}
+			{/if} -->
+			{#if progress && progress > lowerLimit && progress < upperLimit}
 				<div
 					class="absolute bottom-2 lg:bottom-3 inset-x-2 lg:inset-x-3 bg-gradient-to-t ease-in-out z-[1]"
 				>

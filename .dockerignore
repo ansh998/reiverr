@@ -4,3 +4,6 @@ build
 .idea
 .env
 .DS_Store
+.git
+
+backend/plugins

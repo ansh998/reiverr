@@ -6,7 +6,7 @@
 	import TableHeaderRow from '../../Table/TableHeaderRow.svelte';
 	import TableHeaderSortBy from '../../Table/TableHeaderSortBy.svelte';
 	import type { GrabReleaseFn } from '../MediaManagerModal';
-	import Container from '../../../../Container.svelte';
+	import Container from '../../Container.svelte';
 	import TableHeaderCell from '../../Table/TableHeaderCell.svelte';
 	import MMTitle from '../MMTitle.svelte';
 
@@ -64,10 +64,10 @@
 </script>
 
 <Container trapFocus class="py-8 h-full flex flex-col">
-	<h1 class="header4 mx-12">
+	<h1 class="h1 mx-12">
 		<slot name="title" />
 	</h1>
-	<h2 class="header1 mx-12 mb-8">
+	<h2 class="h4 mx-12 mb-8">
 		<slot name="subtitle" />
 	</h2>
 

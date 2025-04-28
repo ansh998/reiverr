@@ -4,7 +4,7 @@
 	import TextField from '../TextField.svelte';
 	import Button from '../Button.svelte';
 	import { ArrowUp, EyeClosed, EyeOpen, Trash, Upload } from 'radix-icons-svelte';
-	import Container from '../../../Container.svelte';
+	import Container from '../Container.svelte';
 	import IconToggle from '../IconToggle.svelte';
 	import Tab from '../Tab/Tab.svelte';
 	import { useTabs } from '../Tab/Tab';
@@ -165,7 +165,7 @@
 
 <Dialog class="grid" size={'dynamic'}>
 	<Tab {...tab} tab={Tabs.EditProfile} class="space-y-4 max-w-lg">
-		<h1 class="header2">
+		<h1 class="h3">
 			{createNew ? 'Create Account' : 'Edit Profile'}
 		</h1>
 		<TextField bind:value={name}>name</TextField>
@@ -236,7 +236,7 @@
 			detail.stopPropagation();
 		}}
 	>
-		<h1 class="header2 mb-6">Select Profile Picture</h1>
+		<h1 class="h3 mb-6">Select Profile Picture</h1>
 		<Container direction="grid" gridCols={3} class="grid grid-cols-3 gap-4 w-max">
 			<ProfileIcon
 				url={profilePictures.ana}

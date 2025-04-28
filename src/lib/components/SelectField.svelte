@@ -1,12 +1,13 @@
 <script lang="ts">
-	import Container from '../../Container.svelte';
+	import Container from './Container.svelte';
 	import { ArrowRight } from 'radix-icons-svelte';
 	import classNames from 'classnames';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher<{ clickOrSelect: null }>();
 
-	export let value: string;
+	export let color: 'secondary' | 'primary' = 'secondary';
+	export let value: string = '';
 	export let disabled: boolean = false;
 	export let action: (() => Promise<any>) | undefined = undefined;
 
@@ -27,11 +28,13 @@
 
 <Container
 	class={classNames(
-		'flex items-center justify-between bg-primary-900 rounded-xl px-6 py-2.5 font-medium',
-		'border-2 border-transparent focus:border-primary-500 hover:border-primary-500  group',
+		'flex items-center justify-between rounded-xl px-6 py-2.5 font-medium',
+		'border-2 border-transparent focus:border-primary-500 hover:border-primary-500 group',
 		{
 			'cursor-pointer': !_disabled,
-			'cursor-not-allowed pointer-events-none opacity-40': _disabled
+			'cursor-not-allowed pointer-events-none opacity-40': _disabled,
+			'bg-primary-900': color === 'secondary',
+			'bg-secondary-800': color === 'primary'
 		},
 		$$restProps.class
 	)}
@@ -39,12 +42,16 @@
 	let:hasFocus
 >
 	<div>
-		<h1 class="text-secondary-300 font-semibold tracking-wide text-sm">
-			<slot />
-		</h1>
-		<span>
-			{value}
-		</span>
+		{#if !$$slots.content}
+			<h1 class="text-secondary-300 font-semibold tracking-wide text-sm">
+				<slot />
+			</h1>
+			<span>
+				{value}
+			</span>
+		{:else}
+			<slot name="content" />
+		{/if}
 	</div>
 	<slot
 		name="icon"

@@ -1,19 +1,43 @@
 <script lang="ts">
-	import Container from '../../Container.svelte';
-	import HeroShowcase from '../components/HeroShowcase/HeroShowcase.svelte';
+	import Container from '$lib/components/Container.svelte';
+	import TmdbMoviesHeroShowcase from '$lib/components/HeroShowcase/TmdbMoviesHeroShowcase.svelte';
+	import { libraryItemsDataStore } from '$lib/stores/data.store';
+	import { setScrollContext } from '$lib/stores/scroll.store';
+	import { setUiVisibilityContext } from '$lib/stores/ui-visibility.store';
+	import { onDestroy } from 'svelte';
+	import { derived } from 'svelte/store';
 	import { TMDB_MOVIE_GENRES, TmdbApi, tmdbApi } from '../apis/tmdb/tmdb-api';
-	import { getShowcasePropsFromTmdbMovie } from '../components/HeroShowcase/HeroShowcase';
-	import Carousel from '../components/Carousel/Carousel.svelte';
-	import { scrollIntoView } from '../selectable';
-	import { jellyfinApi } from '../apis/jellyfin/jellyfin-api';
-	import JellyfinCard from '../components/Card/JellyfinCard.svelte';
-	import { formatDateToYearMonthDay } from '../utils';
 	import TmdbCard from '../components/Card/TmdbCard.svelte';
-	import { navigate } from '../components/StackRouter/StackRouter';
+	import Carousel from '../components/Carousel/Carousel.svelte';
 	import DetachedPage from '../components/DetachedPage/DetachedPage.svelte';
+	import { scrollIntoView } from '../selectable';
+	import { formatDateToYearMonthDay } from '../utils';
 
-	const continueWatching = jellyfinApi.getContinueWatching('movie');
-	const recentlyAdded = jellyfinApi.getRecentlyAdded('movie');
+	const { registerScroll } = setScrollContext();
+	const { visibleStyle } = setUiVisibilityContext();
+
+	const { ...libraryData } = libraryItemsDataStore.subscribe();
+	const libraryContinueWatching = derived(libraryData, (libraryData) => {
+		if (!libraryData) return [];
+
+		const movies = libraryData.filter(
+			(i) => i.mediaType === 'Movie' && i.playStates?.length && !i.watched
+		);
+
+		movies.sort((a, b) => {
+			const aMax = Math.max(
+				...(a.playStates?.map((p) => new Date(p.lastPlayedAt).getTime()) || [0])
+			);
+			const bMax = Math.max(
+				...(b.playStates?.map((p) => new Date(p.lastPlayedAt).getTime()) || [0])
+			);
+
+			return bMax - aMax;
+		});
+
+		return movies;
+	});
+	$: libraryContinueWatchingKey = $libraryContinueWatching && Symbol();
 
 	const popularMovies = tmdbApi.getPopularMovies();
 
@@ -21,8 +45,8 @@
 	const upcomingMovies = getUpcomingMovies();
 	const recommendedMovies = tmdbApi.getRecommendedMovies();
 	const mostRecommendedGenres: Promise<number[]> = recommendedMovies.then(({ genreIdToMovie }) => {
-		const allGenres = Object.keys(genreIdToMovie);
-		allGenres.sort((a, b) => (genreIdToMovie[b]?.length || 0) - (genreIdToMovie[a].length || 0));
+		const allGenres = Object.keys(genreIdToMovie).map((k) => Number(k));
+		allGenres.sort((a, b) => (genreIdToMovie[b]?.length || 0) - (genreIdToMovie[a]?.length || 0));
 		return allGenres;
 	});
 
@@ -58,38 +82,32 @@
 			})
 			.then((res) => res.data?.results || []);
 	}
+
+	onDestroy(() => {
+		libraryData.unsubscribe();
+	});
 </script>
 
 <DetachedPage class="flex flex-col relative">
-	<div class="h-[calc(100vh-12rem)] flex px-32">
-		<HeroShowcase
-			items={recommendedMovies.then(({ top10 }) => getShowcasePropsFromTmdbMovie(top10))}
-			on:enter={scrollIntoView({ top: 0 })}
-			on:select={({ detail }) => navigate(`/movie/${detail?.id}`)}
+	<div use:registerScroll />
+	<Container class="h-[calc(100vh-12rem)] flex px-32" on:enter={scrollIntoView({ top: 0 })}>
+		<TmdbMoviesHeroShowcase
+			movies={recommendedMovies.then(({ top10 }) =>
+				top10.length ? top10 : upcomingMovies.then((m) => m.slice(0, 10))
+			)}
 		/>
-	</div>
-	<div class="my-16 space-y-8">
-		{#await continueWatching then continueWatching}
-			{#if continueWatching?.length}
-				<Carousel scrollClass="px-32" on:enter={scrollIntoView({ vertical: 128 })}>
-					<span slot="header">Continue Watching</span>
-					{#each continueWatching as item (item.Id)}
-						<JellyfinCard on:enter={scrollIntoView({ horizontal: 128 })} size="lg" {item} />
+	</Container>
+	<div class="my-16 space-y-8 relative z-10" style={$visibleStyle}>
+		{#if $libraryContinueWatching.length}
+			<Carousel scrollClass="px-32" on:enter={scrollIntoView({ vertical: 128 })}>
+				<span slot="header">Continue Watching</span>
+				{#key libraryContinueWatchingKey}
+					{#each $libraryContinueWatching as item (item.id)}
+						<TmdbCard on:enter={scrollIntoView({ horizontal: 128 })} size="lg" {item} />
 					{/each}
-				</Carousel>
-			{:else}
-				{#await recentlyAdded then recentlyAdded}
-					{#if recentlyAdded?.length}
-						<Carousel scrollClass="px-32" on:enter={scrollIntoView({ vertical: 128 })}>
-							<span slot="header">Recently Added</span>
-							{#each recentlyAdded as item (item.Id)}
-								<JellyfinCard on:enter={scrollIntoView({ horizontal: 128 })} size="lg" {item} />
-							{/each}
-						</Carousel>
-					{/if}
-				{/await}
-			{/if}
-		{/await}
+				{/key}
+			</Carousel>
+		{/if}
 
 		{#await popularMovies then popularMovies}
 			<Carousel scrollClass="px-32" on:enter={scrollIntoView({ vertical: 128 })}>

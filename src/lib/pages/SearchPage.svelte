@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Container from '../../Container.svelte';
+	import Container from '$components/Container.svelte';
 	import { MagnifyingGlass } from 'radix-icons-svelte';
 	import classNames from 'classnames';
 	import { tmdbApi } from '../apis/tmdb/tmdb-api';
@@ -40,7 +40,7 @@
 <DetachedPage class="px-32 py-16 h-screen flex flex-col">
 	<Container
 		direction="horizontal"
-		class={classNames('header2 pb-3 border-b-2 w-full mb-4', {
+		class={classNames('h3 pb-3 border-b-2 w-full mb-4', {
 			'border-secondary-700': true
 			// 'border-secondary-700': !$inputFocused,
 			// 'border-secondary-400': $inputFocused

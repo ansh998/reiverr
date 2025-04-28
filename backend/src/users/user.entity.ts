@@ -1,5 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { MediaSource } from 'src/media-sources/media-source.entity';
+import { LibraryItem } from 'src/user-data/library/library.entity';
+import { PlayState } from 'src/user-data/play-state/play-state.entity';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 export class SonarrSettings {
   @ApiProperty({ required: true })
@@ -127,4 +130,20 @@ export class User {
   @ApiProperty({ required: true, type: Settings })
   @Column('json', { default: JSON.stringify(DEFAULT_SETTINGS) })
   settings = DEFAULT_SETTINGS;
+
+  // @ApiProperty({ required: false, type: 'object' })
+  // @Column('json', { default: '{}' })
+  // pluginSettings: PluginSettings = {};
+
+  @ApiProperty({ required: false, type: MediaSource, isArray: true })
+  @OneToMany(() => MediaSource, (mediaSource) => mediaSource.user)
+  mediaSources: MediaSource[];
+
+  @ApiProperty({ required: false, type: PlayState, isArray: true })
+  @OneToMany(() => PlayState, (playState) => playState.user)
+  playStates: PlayState[];
+
+  @ApiProperty({ required: false, type: LibraryItem, isArray: true })
+  @OneToMany(() => LibraryItem, (library) => library.user)
+  libraryItems: LibraryItem[];
 }

@@ -1,9 +1,15 @@
 <script lang="ts">
-	import Container from '../../../Container.svelte';
-	import { type KeyEvent, type NavigateEvent, useRegistrar } from '../../selectable.js';
-	import { get } from 'svelte/store';
-	import Sidebar from '../Sidebar/Sidebar.svelte';
 	import classNames from 'classnames';
+	import { get } from 'svelte/store';
+	import { useRegistrar } from '../../selectable.js';
+	import Container from '../Container.svelte';
+	import type { ContainerProps } from '../Container.type';
+	import Sidebar from '../Sidebar/Sidebar.svelte';
+
+	interface $$Props extends ContainerProps {
+		topmost?: boolean;
+		sidebar?: boolean;
+	}
 
 	export let topmost = true;
 	export let sidebar = true;
@@ -41,11 +47,12 @@
 	focusOnMount
 	direction="horizontal"
 	on:mount
+	let:hasFocus
 >
 	{#if sidebar}
 		<Sidebar />
 	{/if}
-	<Container on:back={handleGoToTop} focusOnMount class={classNames($$restProps.class)}>
-		<slot {handleGoBack} registrar={topSelectable.registrar} />
+	<Container {...$$restProps} on:back={handleGoToTop} focusOnMount>
+		<slot {handleGoBack} registrar={topSelectable.registrar} {hasFocus} />
 	</Container>
 </Container>

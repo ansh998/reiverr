@@ -1,11 +1,10 @@
+import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
 import {
   BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
-  HttpCode,
-  HttpStatus,
   InternalServerErrorException,
   NotFoundException,
   Param,
@@ -14,12 +13,15 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { UserServiceError, UsersService } from './users.service';
-import { AuthGuard, GetUser, OptionalAuthGuard } from '../auth/auth.guard';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  GetAuthUser,
+  OptionalAccessControl,
+  UserAccessControl,
+} from '../auth/auth.guard';
 import { CreateUserDto, UpdateUserDto, UserDto } from './user.dto';
 import { User } from './user.entity';
-import { ApiException } from '@nanogiants/nestjs-swagger-api-exception-decorator';
+import { UserServiceError, UsersService } from './users.service';
 
 @ApiTags('users')
 @Controller('users')
@@ -40,14 +42,14 @@ export class UsersController {
   //   return UserDto.fromEntity(user);
   // }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(UserAccessControl)
   @Get('')
   @ApiOkResponse({
     description: 'All users found',
     type: UserDto,
     isArray: true,
   })
-  async findAll(@GetUser() callerUser: User): Promise<UserDto[]> {
+  async findAllUsers(@GetAuthUser() callerUser: User): Promise<UserDto[]> {
     if (!callerUser.isAdmin) {
       throw new UnauthorizedException();
     }
@@ -57,15 +59,14 @@ export class UsersController {
     return users.map((user) => UserDto.fromEntity(user));
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(UserAccessControl)
   @Get(':id')
   @ApiOkResponse({ description: 'User found', type: UserDto })
   @ApiException(() => NotFoundException, { description: 'User not found' })
-  async findById(
+  async findUserById(
     @Param('id') id: string,
-    @GetUser() callerUser: User,
+    @GetAuthUser() callerUser: User,
   ): Promise<UserDto> {
-    console.log('callerUser', callerUser);
     if (!callerUser.isAdmin && callerUser.id !== id) {
       throw new NotFoundException();
     }
@@ -85,15 +86,15 @@ export class UsersController {
   //   return this.userService.noPreviousAdmins();
   // }
 
-  @UseGuards(OptionalAuthGuard)
+  @UseGuards(OptionalAccessControl)
   @Post()
   @ApiOkResponse({ description: 'User created', type: UserDto })
   @ApiException(() => UnauthorizedException, { description: 'Unauthorized' })
   @ApiException(() => BadRequestException)
-  async create(
+  async createUser(
     @Body()
     userCreateDto: CreateUserDto,
-    @GetUser() callerUser: User | undefined,
+    @GetAuthUser() callerUser: User | undefined,
   ) {
     const canCreateUser =
       (await this.usersService.noPreviousAdmins()) || callerUser?.isAdmin;
@@ -106,25 +107,28 @@ export class UsersController {
       else throw new InternalServerErrorException();
     });
 
+    if (!user) {
+      throw new InternalServerErrorException();
+    }
+
     return UserDto.fromEntity(user);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(UserAccessControl)
   @Put(':id')
   @ApiOkResponse({ description: 'User updated', type: UserDto })
   @ApiException(() => NotFoundException, { description: 'User not found' })
-  async update(
+  async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-    @GetUser() callerUser: User,
+    @GetAuthUser() callerUser: User,
   ): Promise<UserDto> {
     if ((!callerUser.isAdmin && callerUser.id !== id) || !id) {
       throw new NotFoundException();
     }
-    const user = await this.usersService.findOne(id);
 
     const updated = await this.usersService
-      .update(user, callerUser, updateUserDto)
+      .update(id, callerUser, updateUserDto)
       .catch((e) => {
         console.error(e);
         if (e === UserServiceError.PasswordMismatch) {
@@ -132,14 +136,18 @@ export class UsersController {
         } else throw new InternalServerErrorException();
       });
 
+    if (!updated) {
+      throw new InternalServerErrorException();
+    }
+
     return UserDto.fromEntity(updated);
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(UserAccessControl)
   @Delete(':id')
   @ApiOkResponse({ description: 'User deleted' })
   @ApiException(() => NotFoundException, { description: 'User not found' })
-  async deleteUser(@Param('id') id: string, @GetUser() callerUser: User) {
+  async deleteUser(@Param('id') id: string, @GetAuthUser() callerUser: User) {
     if ((!callerUser.isAdmin && callerUser.id !== id) || !id) {
       throw new NotFoundException();
     }

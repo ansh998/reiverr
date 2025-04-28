@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Container from '../../Container.svelte';
+	import Container from './Container.svelte';
 	import { onMount } from 'svelte';
 	import classNames from 'classnames';
 	import { getCardDimensions } from '../utils';
@@ -8,7 +8,6 @@
 	export let type: 'portrait' | 'landscape' = 'portrait';
 
 	let cols = getCardDimensions(window.innerWidth, type).columns;
-	$: console.log('cols', cols);
 
 	// let cols: number = 1;
 	// const calculateRows = () => {
@@ -49,6 +48,7 @@
 />
 
 <Container
+	{...$$restProps}
 	direction="grid"
 	gridCols={cols}
 	class={classNames(

@@ -1,6 +1,6 @@
 {
 	"name": "reiverr",
-	"version": "2.0.0-alpha.6",
+	"version": "2.2.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/aleksilassila/reiverr"
@@ -10,7 +10,7 @@
 		"dev": "vite",
 		"build": "npm run --prefix backend build && vite build --mode production --outDir backend/dist/dist",
 		"build:tizen": "set VITE_PLATFORM=tv&& vite build --mode production --outDir tizen/dist",
-		"preview": "vite preview",
+		"preview": "npm run build && npm run --prefix backend start:prod",
 		"preview:tizen": "set VITE_PLATFORM=tv&& vite build --outDir tizen/dist && vite preview --outDir tizen/dist",
 		"deploy": "PORT=9494 NODE_ENV=production node build/",
 		"deploy:electron": "vite build && electron-builder -mw --x64 --config build.config.json; electron-builder -m --arm64 --config build.config.json",
@@ -20,8 +20,10 @@
 		"test:unit": "vitest",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
-		"openapi:update": "npm run --prefix backend openapi:schema && npm run openapi:codegen",
-		"openapi:codegen": "openapi-typescript \"backend/swagger-spec.json\" -o src/lib/apis/reiverr/reiverr.generated.d.ts"
+		"openapi:update": "npm run --prefix backend generate && npm run openapi:codegen",
+		"openapi:codegen": "openapi-typescript \"backend/swagger-spec.json\" -o src/lib/apis/reiverr/reiverr.generated.d.ts",
+		"openapi:generate": "swagger-typescript-api -p \"backend/swagger-spec.json\" -o src/lib/apis/reiverr -n reiverr.openapi.ts --axios --module-name-first-tag",
+		"openapi:generate-tmdb": "swagger-typescript-api -p \"backend/swagger-spec.json\" -o src/lib/apis/reiverr -n reiverr.openapi.ts --axios --module-name-first-tag"
 	},
 	"devDependencies": {
 		"@jellyfin/sdk": "^0.8.2",
@@ -51,7 +53,7 @@
 		"svelte-i18n": "^4.0.0",
 		"svelte-navigator": "^3.2.2",
 		"tailwind-scrollbar-hide": "^1.1.7",
-		"tailwindcss": "^3.4.0",
+		"tailwindcss": "^3.4.17",
 		"terser": "^5.26.0",
 		"tslib": "^2.6.2",
 		"typescript": "^5.2.2",
@@ -70,6 +72,27 @@
 		]
 	},
 	"dependencies": {
-		"gsap": "^3.12.5"
+		"gsap": "^3.12.5",
+		"swagger-typescript-api": "^13.0.23"
+	},
+	"prettier": {
+		"useTabs": true,
+		"singleQuote": true,
+		"trailingComma": "none",
+		"printWidth": 100,
+		"plugins": [
+			"prettier-plugin-svelte"
+		],
+		"pluginSearchDirs": [
+			"."
+		],
+		"overrides": [
+			{
+				"files": "*.svelte",
+				"options": {
+					"parser": "svelte"
+				}
+			}
+		]
 	}
 }

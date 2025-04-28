@@ -2,13 +2,13 @@
 	import DetachedPage from '../components/DetachedPage/DetachedPage.svelte';
 	import { type Session, sessions } from '../stores/session.store.js';
 	import { reiverrApi } from '../apis/reiverr/reiverr-api';
-	import Container from '../../Container.svelte';
+	import Container from '$components/Container.svelte';
 	import Button from '../components/Button.svelte';
 	import classNames from 'classnames';
 	import { navigate } from '../components/StackRouter/StackRouter';
 	import { createModal } from '../components/Modal/modal.store';
 	import AddUserDialog from '../components/Dialog/AddUserDialog.svelte';
-	import Login from '../components/Login.svelte';
+	import Login from '../components/LoginForm.svelte';
 	import { Plus, Trash } from 'radix-icons-svelte';
 	import ProfileIcon from '../components/ProfileIcon.svelte';
 	import { profilePictures } from '../profile-pictures';
@@ -22,6 +22,7 @@
 					.getClient(session.baseUrl, session.token)
 					.GET('/users/{id}', { params: { path: { id: session.id } } })
 					.then((r) => ({ session, user: r.data }))
+					.catch((e) => ({ session, user: undefined, error: e }))
 			)
 		).then((us) => us.filter((u) => !!u.user));
 	}
@@ -32,10 +33,11 @@
 	}
 </script>
 
+{console.log('UsersPage')}
 <DetachedPage sidebar={false} class="px-32 py-16 h-full flex flex-col items-center justify-center">
 	{#await users then users}
 		{#if users?.length}
-			<h1 class="header4 mb-16">Who is watching?</h1>
+			<h1 class="h1 mb-16">Who is watching?</h1>
 			<Container direction="grid" gridCols={4} class="flex space-x-8 mb-16">
 				{#each users as item}
 					{@const user = item.user}
@@ -45,9 +47,7 @@
 							url={user?.profilePicture || profilePictures.keanu}
 							on:clickOrSelect={() => user && handleSwitchUser(item)}
 						/>
-						<div
-							class={classNames('text-center header1', { '!text-secondary-100': hasFocusWithin })}
-						>
+						<div class={classNames('text-center h4', { '!text-secondary-100': hasFocusWithin })}>
 							{user?.name}
 						</div>
 					</Container>
